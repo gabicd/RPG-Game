@@ -71,7 +71,7 @@ const locations = [
   {
     name: "kill monster",
     "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [() => goToPlace(0), () => goToPlace(0), () => goToPlace(0)],
+    "button functions": [() => goToPlace(0), () => goToPlace(0), easterEgg],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
 
@@ -98,7 +98,7 @@ const locations = [
 // initialize buttons
 controlButtons.forEach((button, index) => {
   if (index === 2) {
-    button.onclick = fightDragon;
+    button.onclick = (event) => fightMonster(event);
   }
   else {  
   button.onclick = () => goToPlace(index+1);
@@ -165,8 +165,8 @@ function buyWeapon() {
     }
   } else {
     text.innerText = "You already have the most powerful weapon!";
-    button2.innerText = "Sell weapon for 15 gold";
-    button2.onclick = sellWeapon;
+    controlButtons[1].innerText = "Sell weapon for 15 gold";
+    controlButtons[1].onclick = sellWeapon;
   }
 }
 
@@ -207,12 +207,12 @@ function goFight() {
   monsterStats.style.display = "block";
   monsterName.innerText = monsters[fighting].name;
   monsterHealthText.innerText = monsterHealth;
-  if (monsters[fighting].img){
-    const monsterImg = document.createElement('img')
-    monsterImg.id = "monster-img"
-    monsterImg.src = monsters[fighting].img
-    text.appendChild(monsterImg)
-  }
+  monsters[fighting].img
+  const monsterImg = document.createElement('img')
+  monsterImg.id = "monster-img"
+  monsterImg.src = monsters[fighting].img
+  text.appendChild(monsterImg)
+  
 }
 
 function attack() {
@@ -245,7 +245,6 @@ function attack() {
                 winGame();
                 break;
             default:
-                monsterImg.remove()
                 defeatMonster();
                 break;
         }
@@ -281,6 +280,7 @@ function defeatMonster() {
 
 function lose() {
   update(locations[5]);
+  healthText.innerText = 0;
 }
 
 function winGame() {
@@ -308,20 +308,40 @@ function pick(guess) {
   while (numbers.length < 10) {
     numbers.push(Math.floor(Math.random() * 11));
   }
-  text.innerText = `You picked ${guess}. Here are the random numbers:\n`;
-  for (let i = 0; i < 10; i++) {
-    text.innerText += numbers[i] + "\n";
-  }
+  
+  text.innerHTML = `You picked ${guess}. Here are the random numbers:\n`;
+  
+  const numbersList = document.createElement('ul');
+  numbersList.classList.add('number-list');
+  numbers.forEach(number => {
+    const numberItem = document.createElement('li');
+    numberItem.innerText = number;
+    numbersList.appendChild(numberItem);
+  });
+  
+  text.appendChild(numbersList);
+
+  let resultText
   if (numbers.includes(guess)) {
-    text.innerText += "Right! You win 20 gold!";
-    gold += 20;
-    goldText.innerText = gold;
-  } else {
-    text.innerText += "Wrong! You lose 10 health!";
-    health -= 10;
-    healthText.innerText = health;
+      resultText = "Right! You win 20 gold!";
+      gold += 20;
+      goldText.innerText = gold;
+      const resultItem = document.createElement('p');
+      resultItem.innerText = resultText;
+      text.appendChild(resultItem);
+    } 
+  else {
+      resultText = "Wrong! You lose 10 health!";
+      health -= 10;
+      healthText.innerText = health;
+
+      const resultItem = document.createElement('p');
+      resultItem.innerText = resultText;
+      text.appendChild(resultItem);
+
     if (health <= 0) {
       lose();
     }
   }
+
 }

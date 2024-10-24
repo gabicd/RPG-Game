@@ -93,3 +93,13 @@ body {
     width: 100%;
     max-width: 100px;
   }
+
+  .number-list{
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 2px;
+  }
+  
