@@ -65,7 +65,7 @@ const locations = [
   {
     name: "fight",
     "button text": ["Attack", "Dodge", "Run"],
-    "button functions": [attack, dodge, goTown],
+    "button functions": [attack, dodge, () => goToPlace(0)],
     text: "You are fighting a monster."
   },
   {
@@ -90,7 +90,7 @@ const locations = [
   {
     name: "easter egg",
     "button text": ["2", "8", "Go to town square?"],
-    "button functions": [pickTwo, pickEight, goTown],
+    "button functions": [pickTwo, pickEight, () => goToPlace(0)],
     text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
   }
 ];
@@ -126,20 +126,6 @@ function update(location) {
 
 function goToPlace(locationIndex) {
   update(locations[locationIndex]);
-}
-
-function goTown() {
-  console.log("Went to town square");
-  update(locations[0]);
-}
-
-function goStore() {
-  console.log("Went to the store");
-  update(locations[1]);
-}
-
-function goCave() {
-  update(locations[2]);
 }
 
 function buyHealth() {
