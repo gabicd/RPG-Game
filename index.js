@@ -79,37 +79,36 @@ const locations = [
     name: "lose",
     "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
     "button functions": [restart, restart, restart],
-    text: "You die. &#x2620;"
+    text: "You died. &#x2620;"
   },
   { 
     name: "win", 
     "button text": ["REPLAY?", "REPLAY?", "REPLAY?"], 
     "button functions": [restart, restart, restart], 
-    text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;" 
+    text: "You defeated the dragon! YOU WIN THE GAME! &#x1F389;" 
   },
   {
     name: "easter egg",
     "button text": ["2", "8", "Go to town square?"],
     "button functions": [pickTwo, pickEight, () => goToPlace(0)],
-    text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
+    text: "You found a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
   }
 ];
 
 // initialize buttons
-let i = 0;
-controlButtons.forEach((button) => {
-  button.onclick = () => goToPlace(i);
-  i++;
+controlButtons.forEach((button, index) => {
+  if (index === 2) {
+    button.onclick = fightDragon;
+  }
+  else {  
+  button.onclick = () => goToPlace(index+1);
+  }
 });
 
-controlButtons[0].onclick = () => goToPlace(1);
-
 function update(location) {
-  i = 0;
   monsterStats.style.display = "none";
 
-  for (let locIndex = 0; locIndex < controlButtons.length; locIndex++)
-{  
+  for (let locIndex = 0; locIndex < controlButtons.length; locIndex++) {  
   controlButtons[locIndex].innerText = location["button text"][locIndex];
   controlButtons[locIndex].onclick = location["button functions"][locIndex];
 }
@@ -302,7 +301,7 @@ function pick(guess) {
   while (numbers.length < 10) {
     numbers.push(Math.floor(Math.random() * 11));
   }
-  text.innerText = "You picked " + guess + ". Here are the random numbers:\n";
+  text.innerText = `You picked ${guess}. Here are the random numbers:\n`;
   for (let i = 0; i < 10; i++) {
     text.innerText += numbers[i] + "\n";
   }
