@@ -45,7 +45,7 @@ const locations = [
   {
     name: "town square",
     "button text": ["Go to store", "Go to cave", "Fight dragon"],
-    "button functions": [() => goToPlace(1), () => goToPlace(2), fightDragon],
+    "button functions": [() => goToPlace(1), () => goToPlace(2), (event) => fightMonster(event)],
     text: "You are in the town square. You see a sign that says \"Store\".",
     img: 'storeSign.png'
   },
@@ -59,7 +59,7 @@ const locations = [
   {
     name: "cave",
     "button text": ["Fight slime", "Fight skeleton", "Go to town square"],
-    "button functions": [fightMonster, fightMonster, () => goToPlace(0)],
+    "button functions": [(event) => fightMonster(event), (event) => fightMonster(event), () => goToPlace(0)],
     text: "You enter the cave. You see some monsters."
   },
   {
@@ -182,39 +182,23 @@ function sellWeapon() {
   }
 }
 
-function fightMonster(){
-  controlButtons.forEach((button, index) => {
-    button.onclick = () => {
-      switch(index){
-        case 0:
-          fighting = index;
-          goFight();
-          break;
-        case 1:
-          fighting = index;
-          goFight();
-          break;
-        case 2:
-          goToPlace(0);
-          break;
-      }
-    };
-  });
-}
-
-function fightSlime() {
-  fighting = 0;
-  goFight();
-}
-
-function fightBeast() {
-  fighting = 1;
-  goFight();
-}
-
-function fightDragon() {
-  fighting = 2;
-  goFight();
+function fightMonster(event){
+  const button = event.target;
+  const buttonIndex = Array.from(controlButtons).indexOf(button);
+  switch (buttonIndex) {
+    case 0:
+      fighting = buttonIndex;
+      goFight();
+      break;
+    case 1:
+      fighting = buttonIndex;
+      goFight();  
+      break;
+    case 2:
+      fighting = buttonIndex;
+      goFight();
+      break;
+  }
 }
 
 function goFight() {
