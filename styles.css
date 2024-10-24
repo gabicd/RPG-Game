@@ -1,0 +1,85 @@
+body {
+    background-color: #0a0a23;
+    font-family: "Noto Serif";
+  }
+  
+  #text {
+    background-color: #0a0a23;
+    color: #ffffff;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #game {
+    max-width: 500px;
+    max-height: 400px;
+    background-color: #ffffff;
+    color: #ffffff;
+    margin: 30px auto 0px;
+    padding: 10px;
+  }
+  
+  #controls,
+  #stats {
+    border: 1px solid #0a0a23;
+    padding: 5px;
+    color: #0a0a23;
+  }
+
+  #controls{
+    background-color: #A599B5;
+  }
+
+  #stats{
+    font-weight: bold;
+  }
+  
+  #monsterStats {
+    display: none;
+    border: 1px solid #0a0a23;
+    padding: 5px;
+    color: #ffffff;
+    background-color: #c70d0d;
+  }
+  
+  .stat {
+    padding-right: 10px;
+  }
+  
+  button {
+    cursor: pointer;
+    color: #0a0a23;
+    background-color: #feac32;
+    background-image: linear-gradient(#fecc4c, #ffac33);
+    border: 3px solid #feac32;
+    border-radius: 5px;
+    transition: filter 0.2s;
+    font-family: "Lilita One";
+  }
+
+  button:hover{
+    filter: brightness(1.1);
+  }
+
+  button:active{
+    filter: brightness(1.2);
+  }
+
+  #xpText{
+    color: #36a832;
+  }
+
+  #healthText{
+    color: #c43535;
+  }
+
+  #goldText{
+    color: #c48b35;
+  }
+
+  #monster-img{
+    width: 100%;
+    max-width: 100px;
+  }
