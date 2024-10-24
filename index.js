@@ -7,9 +7,7 @@ let fighting;
 let monsterHealth;
 let inventory = ["stick"];
 
-const button1 = document.getElementById('button1');
-const button2 = document.getElementById("button2");
-const button3 = document.getElementById("button3");
+let controlButtons = document.querySelectorAll(".control-button");
 const text = document.getElementById("text");
 const xpText = document.getElementById("xpText");
 const healthText = document.getElementById("healthText");
@@ -47,21 +45,21 @@ const locations = [
   {
     name: "town square",
     "button text": ["Go to store", "Go to cave", "Fight dragon"],
-    "button functions": [goStore, goCave, fightDragon],
+    "button functions": [() => goToPlace(1), () => goToPlace(2), fightDragon],
     text: "You are in the town square. You see a sign that says \"Store\".",
     img: 'storeSign.png'
   },
   {
     name: "store",
     "button text": ["Buy Potion (+10 health) - 10 gold", "Buy weapon - 30 gold", "Go to town square"],
-    "button functions": [buyHealth, buyWeapon, goTown],
+    "button functions": [buyHealth, buyWeapon, () => goToPlace(0)],
     text: "You enter the store.",
     img: 'https://png.pngtree.com/png-vector/20240917/ourmid/pngtree-potion-bottle-pixel-art-vector-png-image_13852691.png'
   },
   {
     name: "cave",
     "button text": ["Fight slime", "Fight skeleton", "Go to town square"],
-    "button functions": [fightSlime, fightBeast, goTown],
+    "button functions": [fightSlime, fightBeast, () => goToPlace(0)],
     text: "You enter the cave. You see some monsters."
   },
   {
@@ -73,7 +71,7 @@ const locations = [
   {
     name: "kill monster",
     "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [goTown, goTown, goTown],
+    "button functions": [() => goToPlace(0), () => goToPlace(0), () => goToPlace(0)],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
 
@@ -98,18 +96,24 @@ const locations = [
 ];
 
 // initialize buttons
-button1.onclick = goStore;
-button2.onclick = goCave;
-button3.onclick = fightDragon;
+let i = 0;
+controlButtons.forEach((button) => {
+  button.onclick = () => goToPlace(i);
+  i++;
+});
+
+controlButtons[0].onclick = () => goToPlace(1);
 
 function update(location) {
+  i = 0;
   monsterStats.style.display = "none";
-  button1.innerText = location["button text"][0];
-  button2.innerText = location["button text"][1];
-  button3.innerText = location["button text"][2];
-  button1.onclick = location["button functions"][0];
-  button2.onclick = location["button functions"][1];
-  button3.onclick = location["button functions"][2];
+
+  for (let locIndex = 0; locIndex < controlButtons.length; locIndex++)
+{  
+  controlButtons[locIndex].innerText = location["button text"][locIndex];
+  controlButtons[locIndex].onclick = location["button functions"][locIndex];
+}
+  
   text.innerHTML = location.text;
 
   if (location.img){
@@ -120,11 +124,17 @@ function update(location) {
   }
 }
 
+function goToPlace(locationIndex) {
+  update(locations[locationIndex]);
+}
+
 function goTown() {
+  console.log("Went to town square");
   update(locations[0]);
 }
 
 function goStore() {
+  console.log("Went to the store");
   update(locations[1]);
 }
 
