@@ -3,9 +3,11 @@ let xp = 0;
 let health = 100;
 let gold = 50;
 let currentWeapon = 0;
+let currentLocation = 0;
+let lastMonster;
 let fighting;
 let monsterHealth;
-let inventory = ["stick"];
+let inventory = ["Stick"];
 
 let controlButtons = document.querySelectorAll(".control-button");
 const text = document.getElementById("text");
@@ -16,10 +18,10 @@ const monsterStats = document.getElementById("monsterStats");
 const monsterName = document.getElementById("monsterName");
 const monsterHealthText = document.getElementById("monsterHealth");
 const weapons = [
-  { name: 'stick', power: 5 },
-  { name: 'dagger', power: 30 },
-  { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 }
+  { name: 'Stick', power: 5 },
+  { name: 'Dagger', power: 30 },
+  { name: 'Claw Hammer', power: 50 },
+  { name: 'Sword', power: 100 }
 ];
 const monsters = [
   {
@@ -70,8 +72,8 @@ const locations = [
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [() => goToPlace(0), () => goToPlace(0), easterEgg],
+    "button text": ["Fight again", "Go to store", "Go to town square"],
+    "button functions": [(event) => fightMonster(event), () => goToPlace(1), () => goToPlace(0)],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
 
@@ -79,13 +81,13 @@ const locations = [
     name: "lose",
     "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
     "button functions": [restart, restart, restart],
-    text: "You died. &#x2620;"
+    text: "You died ⚰"
   },
   { 
     name: "win", 
     "button text": ["REPLAY?", "REPLAY?", "REPLAY?"], 
     "button functions": [restart, restart, restart], 
-    text: "You defeated the dragon! YOU WIN THE GAME! &#x1F389;" 
+    text: "You defeated the dragon! YOU WON THE GAME! ⚔" 
   },
   {
     name: "easter egg",
@@ -109,6 +111,7 @@ function update(location) {
   monsterStats.style.display = "none";
 
   for (let locIndex = 0; locIndex < controlButtons.length; locIndex++) {  
+  controlButtons[locIndex].style.display = 'initial'
   controlButtons[locIndex].innerText = location["button text"][locIndex];
   controlButtons[locIndex].onclick = location["button functions"][locIndex];
 }
@@ -124,6 +127,8 @@ function update(location) {
 }
 
 function goToPlace(locationIndex) {
+  currentLocation = locationIndex;
+
   update(locations[locationIndex]);
   if (locationIndex === 2) {
     fightMonster(); 
@@ -175,8 +180,7 @@ function sellWeapon() {
     gold += 15;
     goldText.innerText = gold;
     let currentWeapon = inventory.shift();
-    text.innerText = `You sold a ${currentWeapon}.`;
-    text.innerText +=  ` In your inventory you have: ${inventory.join(', ')}`;
+    text.innerText = `You sold a ${currentWeapon}. In your inventory you have: ${inventory.join(', ')}`;
   } else {
     text.innerText = "Don't sell your only weapon!";
   }
@@ -184,21 +188,23 @@ function sellWeapon() {
 
 function fightMonster(event){
   const button = event.target;
-  const buttonIndex = Array.from(controlButtons).indexOf(button);
-  switch (buttonIndex) {
-    case 0:
-      fighting = buttonIndex;
-      goFight();
-      break;
-    case 1:
-      fighting = buttonIndex;
+  const buttonName = (button.innerText).slice(6);
+  console.log(buttonName)
+  const monsterIndex = monsters.findIndex(monster => 
+    monster.name.toLowerCase() === buttonName.trim()
+  );
+
+  for (let i = 0; i < monsters.length; i++){
+    if (monsterIndex === i){
+      fighting = monsterIndex;
       goFight();  
-      break;
-    case 2:
-      fighting = buttonIndex;
+    }
+  
+    else if (monsterIndex === -1){
       goFight();
-      break;
+    }
   }
+
 }
 
 function goFight() {
@@ -280,11 +286,18 @@ function defeatMonster() {
 
 function lose() {
   update(locations[5]);
+  
   healthText.innerText = 0;
+  
+  controlButtons[1].style.display = 'none';
+  controlButtons[2].style.display = 'none';
 }
 
 function winGame() {
   update(locations[6]);
+  
+  controlButtons[1].style.display = 'none';
+  controlButtons[2].style.display = 'none';
 }
 
 function restart() {
@@ -343,5 +356,27 @@ function pick(guess) {
       lose();
     }
   }
+
+}
+
+function checkInventory (){
+  text.innerText = '';
+
+  const inventoryList = document.createElement('ul');
+  inventory.forEach(item => {
+    const listItem = document.createElement('li');
+    listItem.innerText = item;
+    inventoryList.appendChild(listItem);
+  });
+
+  text.appendChild(inventoryList);
+
+  controlButtons[1].style.display = 'none';
+  controlButtons[2].style.display = 'none';
+
+  controlButtons[0].innerText = 'Return';
+  controlButtons[0].onclick = () => goToPlace(currentLocation);
+
+  monsterStats.style.display = 'none'
 
 }
