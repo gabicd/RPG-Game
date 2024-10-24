@@ -31,14 +31,16 @@ const monsters = [
     img: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/45736226-4350-419f-acd8-d950e4a3c1c6/de9ited-2332eae4-a0ff-4966-915c-33735dfc7c37.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzQ1NzM2MjI2LTQzNTAtNDE5Zi1hY2Q4LWQ5NTBlNGEzYzFjNlwvZGU5aXRlZC0yMzMyZWFlNC1hMGZmLTQ5NjYtOTE1Yy0zMzczNWRmYzdjMzcuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.dRz9i0hMJMBCGVGMpux2cML4Sl5P3sxMmshAHIFU0iI'
   },
   {
-    name: "fanged beast",
+    name: "skeleton",
     level: 8,
-    health: 60
+    health: 60,
+    img: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/9d70ef73-ee0b-4abf-b97a-3389eff38ed5/d9vgxfx-b4707e19-5cbf-47be-9baf-666dd1e9c145.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzlkNzBlZjczLWVlMGItNGFiZi1iOTdhLTMzODllZmYzOGVkNVwvZDl2Z3hmeC1iNDcwN2UxOS01Y2JmLTQ3YmUtOWJhZi02NjZkZDFlOWMxNDUuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.SCx5Bl_HOQ3pBmecdTzg_YJjlmm0Yj4TohyA_h6x6GA'
   },
   {
     name: "dragon",
     level: 20,
-    health: 300
+    health: 300,
+    img: 'https://art.ngfiles.com/images/2817000/2817230_haroldkrell_dragon-gif.gif?f1667505051'
   }
 ]
 const locations = [
@@ -46,17 +48,18 @@ const locations = [
     name: "town square",
     "button text": ["Go to store", "Go to cave", "Fight dragon"],
     "button functions": [goStore, goCave, fightDragon],
-    text: "You are in the town square. You see a sign that says \"Store\"."
+    text: "You are in the town square. You see a sign that says \"Store\".",
+    img: 'storeSign.png'
   },
   {
     name: "store",
-    "button text": ["Buy Potion (10 health) - 10 gold", "Buy weapon - 30 gold", "Go to town square"],
+    "button text": ["Buy Potion (+10 health) - 10 gold", "Buy weapon - 30 gold", "Go to town square"],
     "button functions": [buyHealth, buyWeapon, goTown],
     text: "You enter the store."
   },
   {
     name: "cave",
-    "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
+    "button text": ["Fight slime", "Fight skeleton", "Go to town square"],
     "button functions": [fightSlime, fightBeast, goTown],
     text: "You enter the cave. You see some monsters."
   },
@@ -107,6 +110,13 @@ function update(location) {
   button2.onclick = location["button functions"][1];
   button3.onclick = location["button functions"][2];
   text.innerHTML = location.text;
+
+  if (location.img){
+    const locationImg = document.createElement('img')
+    locationImg.id = "location-img"
+    locationImg.src = location.img
+    text.appendChild(locationImg)
+  }
 }
 
 function goTown() {
@@ -139,9 +149,18 @@ function buyWeapon() {
       currentWeapon++;
       goldText.innerText = gold;
       let newWeapon = weapons[currentWeapon].name;
-      text.innerText = `You now have a ${newWeapon}.`;
+      text.innerText = `You now have a ${newWeapon}. In your inventory you have:`;
       inventory.push(newWeapon);
-      text.innerText +=  ` In your inventory you have: ${inventory.join(', ')}`;
+      
+      const inventoryList = document.createElement('ul');
+      inventory.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.innerText = item;
+        inventoryList.appendChild(listItem);
+      });
+
+      text.appendChild(inventoryList);
+
     } else {
       text.innerText = "You do not have enough gold to buy a weapon.";
     }
