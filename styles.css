@@ -36,6 +36,8 @@ body {
     font-weight: bold;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+    background-color: #d1f4f8;
+    border-bottom: 0px;
   }
   
   #monsterStats {
@@ -88,4 +90,6 @@ body {
 
   #location-img{
     margin-top: 16px;
+    width: 100%;
+    max-width: 100px;
   }
