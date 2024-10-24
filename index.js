@@ -59,7 +59,7 @@ const locations = [
   {
     name: "cave",
     "button text": ["Fight slime", "Fight skeleton", "Go to town square"],
-    "button functions": [fightSlime, fightBeast, () => goToPlace(0)],
+    "button functions": [fightMonster, fightMonster, () => goToPlace(0)],
     text: "You enter the cave. You see some monsters."
   },
   {
@@ -125,6 +125,9 @@ function update(location) {
 
 function goToPlace(locationIndex) {
   update(locations[locationIndex]);
+  if (locationIndex === 2) {
+    fightMonster(); 
+  }
 }
 
 function buyHealth() {
@@ -177,6 +180,26 @@ function sellWeapon() {
   } else {
     text.innerText = "Don't sell your only weapon!";
   }
+}
+
+function fightMonster(){
+  controlButtons.forEach((button, index) => {
+    button.onclick = () => {
+      switch(index){
+        case 0:
+          fighting = index;
+          goFight();
+          break;
+        case 1:
+          fighting = index;
+          goFight();
+          break;
+        case 2:
+          goToPlace(0);
+          break;
+      }
+    };
+  });
 }
 
 function fightSlime() {
