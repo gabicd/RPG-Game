@@ -105,6 +105,7 @@ body {
 
   .button-container{
     float: right;
+    margin-left: 6px;
   }
 
   .sell-button{
@@ -117,3 +118,33 @@ body {
     border: 3px solid #9ad5db;
   }
   
+
+  
+  .progress {
+    background-color: rgb(162, 162, 162);
+    border-radius: 5px;
+    height: 20px;
+    width: 300px;
+    margin: 0 auto;
+    margin-top: 10px;
+    font-size: small;
+  }
+
+  .progress-done {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: repeating-linear-gradient(
+      to left,
+      #32a846,
+      #3fb052,
+      #44c261
+    );
+
+    box-shadow: 0 5px 5px -6px 32a84, 0 3px 7px #3fb052;
+    border-radius: 5px;
+    color: white;
+    height: 100%;
+    width: 0;
+    transition: 1s ease 0.3s
+  }

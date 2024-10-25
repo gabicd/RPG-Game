@@ -1,3 +1,29 @@
+//create player
+const player = {
+  level: 1,
+  attack: 10,
+  defense: 5,
+  requiredXp: 50,
+  maxHp: 50,
+  baseXp: 50,
+  baseHealth: 50,
+
+  levelUp() {
+      this.level++
+      this.attack = Math.round(this.attack * 1.12)
+      this.defense = Math.round(this.defense * 1.08)
+      this.requiredXp = Math.floor(this.baseXp * Math.pow(1.5, this.level-1))
+
+    },
+
+    updateHealth(){
+      const additionalHealth = 5 * (this.level - 1);
+      this.maxHp = this.maxHp  + additionalHealth
+      console.log(`Leveled up to ${this.level}. New maxHp: ${this.maxHp}`);
+    }
+
+  }
+
 // initialize buttons
 let controlButtons = document.querySelectorAll(".control-button");
 
@@ -41,9 +67,15 @@ function goToPlace(locationIndex) {
 }
 
 function buyHealth() {
-  if (gold >= 10) {
+  if (gold >= 10 && health <= player.maxHp) {
     gold -= 10;
     health += 10;
+    if (health > player.maxHp){
+      health = player.maxHp
+      goldText.innerText = gold;
+      healthText.innerText = health;
+      text.innerText = "You are already at max health!";
+    }
     goldText.innerText = gold;
     healthText.innerText = health;
   } else {
@@ -125,7 +157,7 @@ function attack() {
     text.innerHTML = "";
     let monsterImg
     text.innerText = `The ${monsters[fighting].name} attacks. You attack it with your ${weapons[currentWeapon].name}. `;
-    health -= getMonsterAttackValue(monsters[fighting].level);
+    health -= getMonsterAttackValue(monsters[fighting]);
     
     if (monsters[fighting].img) {
         monsterImg = document.createElement('img');
@@ -135,7 +167,7 @@ function attack() {
       }
 
     if (isMonsterHit()) {
-        monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;    
+        monsterHealth -= (player.attack - monsters[fighting].defense) + Math.floor(Math.random() * 5) - 2;    
     } else {
         monsterImg.insertAdjacentText('beforebegin', " You miss.");
     }
@@ -163,9 +195,12 @@ function attack() {
 
 }
 
-function getMonsterAttackValue(level) {
-  const hit = (level * 5) - (Math.floor(Math.random() * xp));
-  return hit > 0 ? hit : 0;
+function getMonsterAttackValue(monster) {
+  let hit = (Number(monster.attack) - Number(player.defense * 0.3))
+  const random = Math.random() * 0.2 + 0.9
+  hit *= random
+  console.log(`Monster hit: ${Math.round(hit)}`)
+  return Math.round(hit);
 }
 
 function isMonsterHit() {
@@ -177,11 +212,30 @@ function dodge() {
 }
 
 function defeatMonster() {
-  gold += Math.floor(monsters[fighting].level * 6.7);
-  xp += monsters[fighting].level;
+  let gainedGold = Math.floor(monsters[fighting].level * (Math.random() * (7-1) + 1));
+  console.log(`You gained: ${gainedGold} gold`)
+  gold += gainedGold
+  let gainedXp = (monsters[fighting].level * Math.floor(Math.random() * (10-1) + 1));
+  xp += gainedXp
+  changeWidth()
+  console.log(`You gained: ${gainedXp} xp`)
   goldText.innerText = gold;
   xpText.innerText = xp;
   update(locations[4]);
+  if (xp >= player.requiredXp){
+    currentMaxHp = player.maxHp
+    //console.log(`Current max: ${currentMaxHp}`)
+    //console.log(`Base HP: ${player.baseHealth}`)
+    xp -= player.requiredXp
+    changeWidth()
+    xpText.innerText = xp 
+    player.levelUp();
+    player.updateHealth();
+    //console.log(player)
+    health += player.maxHp - currentMaxHp
+    //console.log(`Gained health: ${player.maxHp - currentMaxHp}`)
+    healthText.innerText = health;
+  }
 }
 
 function lose() {
@@ -204,56 +258,6 @@ function restart() {
     location.reload();
 }
 
-function easterEgg() {
-  update(locations[7]);
-}
-
-function pickTwo() {
-  pick(2);
-}
-
-function pickEight() {
-  pick(8);
-}
-
-function pick(guess) {
-  const numbers = [];
-  while (numbers.length < 10) {
-    numbers.push(Math.floor(Math.random() * 11));
-  }
-  
-  text.innerHTML = `You picked ${guess}. Here are the random numbers:\n`;
-  
-  const numbersList = createList(numbers);
-  numbersList.classList.add('number-list');
-  
-  text.appendChild(numbersList);
-
-  let resultText
-  if (numbers.includes(guess)) {
-      resultText = "Right! You win 20 gold!";
-      gold += 20;
-      goldText.innerText = gold;
-      const resultItem = document.createElement('p');
-      resultItem.innerText = resultText;
-      text.appendChild(resultItem);
-    } 
-  else {
-      resultText = "Wrong! You lose 10 health!";
-      health -= 10;
-      healthText.innerText = health;
-
-      const resultItem = document.createElement('p');
-      resultItem.innerText = resultText;
-      text.appendChild(resultItem);
-
-    if (health <= 0) {
-      lose();
-    }
-  }
-
-}
-
 function checkInventory (){
   text.innerText = '';
 
@@ -273,6 +277,41 @@ function checkInventory (){
 
 }
 
+function checkStats(){
+  text.innerText = '';
+
+  let statsArray = Object.entries(player);
+  statsArray.splice(-4)
+  statsArray = statsArray.map(([key, value]) => {
+    let formattedKey
+    if (key === 'requiredXp'){
+      formattedKey = 'XP to next level'
+    }
+
+    else if (key === 'maxHp'){
+      formattedKey = 'Max HP'
+    }
+    
+    else{
+      formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+    }
+    
+    return `${formattedKey}: ${value}`;
+  })
+  const statsList = createList(statsArray)
+
+  text.appendChild(statsList)
+
+  controlButtons[1].style.display = 'none';
+  controlButtons[2].style.display = 'none';
+
+  controlButtons[0].innerText = 'Return';
+  controlButtons[0].onclick = () => goToPlace(currentLocation);
+
+  monsterStats.style.display = 'none'
+
+}
+
 function createList(array){
     const arrayList = document.createElement('ul');
     array.forEach(item => {
@@ -282,4 +321,9 @@ function createList(array){
   });
 
 return arrayList
+}
+
+function changeWidth(){
+  progress.style.width = `${(xp / player.requiredXp) * 100}%`
+  progress.innerText = `${((xp / player.requiredXp) * 100).toFixed(2)}%`
 }
