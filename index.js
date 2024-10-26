@@ -1,19 +1,20 @@
 //create player
 const player = {
-  level: 1,
   attack: 10,
   defense: 5,
-  requiredXp: 50,
+  speed: 7,
   maxHp: 50,
+  requiredXp: 50,
   baseXp: 50,
-  baseHealth: 50,
-
+  level: 1,
+  
   levelUp() {
       this.level++
       this.attack = Math.round(this.attack * 1.12)
-      this.defense = Math.round(this.defense * 1.08)
+      this.speed =  Math.round(this.speed * 1.15)
+      this.defense = Math.round(this.defense * 1.1)
       this.requiredXp = Math.floor(this.baseXp * Math.pow(1.5, this.level-1))
-
+      levelText.innerText = this.level
     },
 
     updateHealth(){
@@ -38,6 +39,12 @@ controlButtons.forEach((button, index) => {
 
 function update(location) {
   monsterStats.style.display = "none";
+  progressBar.style.display = 'none'
+  
+  if(location === locations[4]){
+    progressBar.style.display = 'block'
+    progress.style.setProperty('--targetWidth', `${(xp / player.requiredXp) * 100}%`)
+  }
 
   for (let locIndex = 0; locIndex < controlButtons.length; locIndex++) {  
     controlButtons[locIndex].style.display = 'initial'
@@ -110,7 +117,7 @@ function sellWeapon() {
     gold += 15;
     goldText.innerText = gold;
     let currentWeapon = inventory.shift();
-    text.innerText = `You sold a ${currentWeapon}. In your inventory you have:`;
+    text.innerText = `You sold your ${currentWeapon}. In your inventory you have:`;
 
     const inventoryList = createList(inventory);
     text.appendChild(inventoryList);
@@ -157,7 +164,12 @@ function attack() {
     text.innerHTML = "";
     let monsterImg
     text.innerText = `The ${monsters[fighting].name} attacks. You attack it with your ${weapons[currentWeapon].name}. `;
-    health -= getMonsterAttackValue(monsters[fighting]);
+    if(hasDodged === false){
+      health -= getMonsterAttackValue(monsters[fighting]);
+    }
+    else {
+      hasDodged = false
+    }
     
     if (monsters[fighting].img) {
         monsterImg = document.createElement('img');
@@ -167,7 +179,9 @@ function attack() {
       }
 
     if (isMonsterHit()) {
-        monsterHealth -= (player.attack - monsters[fighting].defense) + Math.floor(Math.random() * 5) - 2;    
+        const playerHit = player.attack + Math.floor(weapons[currentWeapon].power * Math.random()) - monsters[fighting].defense
+        console.log(`Attack! You gave ${playerHit} dmg`)
+        monsterHealth -= playerHit
     } else {
         monsterImg.insertAdjacentText('beforebegin', " You miss.");
     }
@@ -204,18 +218,37 @@ function getMonsterAttackValue(monster) {
 }
 
 function isMonsterHit() {
-  return Math.random() > .2 || health < 20;
+  return Math.random() < weapons[currentWeapon].accuracy;
 }
 
 function dodge() {
-  text.textContent = `You dodge the attack from the ${monsters[fighting].name}`;
+  const baseChance = 0.4
+  const random = Math.random()
+  
+  if (random < (baseChance + (player.speed * 0.02))) {
+    text.textContent = `Too slow... ${monsters[fighting].name} attacked!`;
+    console.log(random)
+    health -= getMonsterAttackValue(monsters[fighting]);
+    healthText.innerText = health;
+      if(health <= 0){
+        lose()
+      }
+    hasDodged = false
+  }
+
+  else {
+    console.log(random)
+    text.textContent = `You dodged the attack from the ${monsters[fighting].name}`;
+    hasDodged = true
+  }
+
 }
 
 function defeatMonster() {
-  let gainedGold = Math.floor(monsters[fighting].level * (Math.random() * (7-1) + 1));
+  let gainedGold = Math.floor(monsters[fighting].level * (Math.random() * (5-3) + 3));
   console.log(`You gained: ${gainedGold} gold`)
   gold += gainedGold
-  let gainedXp = (monsters[fighting].level * Math.floor(Math.random() * (10-1) + 1));
+  let gainedXp = (monsters[fighting].level * Math.floor(Math.random() * (8-2) + 2));
   xp += gainedXp
   changeWidth()
   console.log(`You gained: ${gainedXp} xp`)
@@ -224,16 +257,12 @@ function defeatMonster() {
   update(locations[4]);
   if (xp >= player.requiredXp){
     currentMaxHp = player.maxHp
-    //console.log(`Current max: ${currentMaxHp}`)
-    //console.log(`Base HP: ${player.baseHealth}`)
     xp -= player.requiredXp
     changeWidth()
     xpText.innerText = xp 
     player.levelUp();
     player.updateHealth();
-    //console.log(player)
     health += player.maxHp - currentMaxHp
-    //console.log(`Gained health: ${player.maxHp - currentMaxHp}`)
     healthText.innerText = health;
   }
 }
@@ -274,6 +303,7 @@ function checkInventory (){
   controlButtons[1].style.cssFloat = 'right'
 
   monsterStats.style.display = 'none'
+  progressBar.style.display = 'none'
 
 }
 
@@ -285,18 +315,20 @@ function checkStats(){
   statsArray = statsArray.map(([key, value]) => {
     let formattedKey
     if (key === 'requiredXp'){
-      formattedKey = 'XP to next level'
+      formattedKey = 'XP needed to the next level'
+      return `${formattedKey}: ${xp}/${value}`;
     }
 
     else if (key === 'maxHp'){
       formattedKey = 'Max HP'
+      return `${formattedKey}: ${value}`;
     }
     
     else{
       formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      return `${formattedKey}: ${value}`;
     }
     
-    return `${formattedKey}: ${value}`;
   })
   const statsList = createList(statsArray)
 
@@ -309,6 +341,9 @@ function checkStats(){
   controlButtons[0].onclick = () => goToPlace(currentLocation);
 
   monsterStats.style.display = 'none'
+  progressBar.style.display = 'block'
+  progress.style.setProperty('--targetWidth', `${(xp / player.requiredXp) * 100}%`)
+
 
 }
 
@@ -325,5 +360,5 @@ return arrayList
 
 function changeWidth(){
   progress.style.width = `${(xp / player.requiredXp) * 100}%`
-  progress.innerText = `${((xp / player.requiredXp) * 100).toFixed(2)}%`
+  progress.innerText = `${(Math.round((xp / player.requiredXp) * 100))}%`
 }

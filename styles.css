@@ -4,18 +4,21 @@ body {
   }
   
   #text {
-    background-color: #0a0a23;
+    background-color: #615A4E;
     color: #ffffff;
     padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
   
   #game {
-    max-width: 500px;
-    max-height: 400px;
-    background-color: #ffffff;
+    max-width: 600px;
+    max-height: 480px;
+    background-image: url(https://i.redd.it/m1pxluwqbgj41.png);
+    background-position: center;
     color: #ffffff;
     margin: 30px auto 0px;
     padding: 10px;
@@ -29,23 +32,24 @@ body {
   }
 
   #controls{
-    background-color: #A599B5;
+    background-color: #A19277;
   }
 
   #stats{
     font-weight: bold;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    background-color: #d1f4f8;
+    background-color: #E0B86D;
     border-bottom: 0px;
   }
   
   #monsterStats {
     display: none;
     border: 1px solid #0a0a23;
+    border-top: none;
     padding: 5px;
     color: #ffffff;
-    background-color: #c70d0d;
+    background-color: #c53838;
   }
   
   .stat {
@@ -80,7 +84,7 @@ body {
   }
 
   #goldText{
-    color: #c48b35;
+    color: #ffee00;
   }
 
   #monster-img{
@@ -113,14 +117,15 @@ body {
   }
 
   #inventory-button{
-    background-color: #9ad5db;
-    background-image: none;
-    border: 3px solid #9ad5db;
+    background-color: #737E8B;
+    background-image: linear-gradient(#7d8791, #707b88);
+    border: 3px solid #737E8B;
   }
   
 
   
   .progress {
+    display: none;
     background-color: rgb(162, 162, 162);
     border-radius: 5px;
     height: 20px;
@@ -137,14 +142,25 @@ body {
     background-image: repeating-linear-gradient(
       to left,
       #32a846,
-      #3fb052,
-      #44c261
+      #4bbb5e,
+      #54c96f
     );
-
     box-shadow: 0 5px 5px -6px 32a84, 0 3px 7px #3fb052;
     border-radius: 5px;
     color: white;
     height: 100%;
     width: 0;
-    transition: 1s ease 0.3s
+    font-size: smaller;
+    font-weight: bold;
+    animation: load 2s linear forwards;
+  }
+
+  @keyframes load{
+    from{
+      width: 0;
+    }
+
+    to{
+      width: var(--targetWidth)
+    }
   }

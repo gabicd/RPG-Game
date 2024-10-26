@@ -8,8 +8,10 @@ let lastMonster;
 let fighting;
 let monsterHealth;
 let inventory = ["Stick"];
+let hasDodged = false
 
 const text = document.getElementById("text");
+const levelText = document.getElementById("levelText")
 const xpText = document.getElementById("xpText");
 const healthText = document.getElementById("healthText");
 const goldText = document.getElementById("goldText");
@@ -17,29 +19,42 @@ const monsterStats = document.getElementById("monsterStats");
 const monsterName = document.getElementById("monsterName");
 const monsterHealthText = document.getElementById("monsterHealth");
 const controlsContainer = document.getElementById('controls')
+const progressBar =  document.querySelector('.progress')
 const progress = document.querySelector(".progress-done")
 
 const weapons = [
-  { name: 'Stick', power: 5 },
-  { name: 'Dagger', power: 30 },
-  { name: 'Claw Hammer', power: 50 },
-  { name: 'Sword', power: 100 }
+  { name: 'Stick',
+    power: 5,
+    accuracy: 0.95
+  },
+  { name: 'Dagger',
+    power: 15,
+    accuracy: 0.90
+    },
+  { name: 'Claw Hammer',
+    power: 40,
+    accuracy: 0.88
+    },
+  { name: 'Sword',
+    power: 85,
+    accuracy: 0.92
+  }
 ];
 
 const monsters = [
   {
     name: "Slime",
     level: 2,
-    attack: 5,
-    defense: 2,
-    health: 15,
+    attack: 8,
+    defense: 3,
+    health: 30,
     img: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/45736226-4350-419f-acd8-d950e4a3c1c6/de9ited-2332eae4-a0ff-4966-915c-33735dfc7c37.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzQ1NzM2MjI2LTQzNTAtNDE5Zi1hY2Q4LWQ5NTBlNGEzYzFjNlwvZGU5aXRlZC0yMzMyZWFlNC1hMGZmLTQ5NjYtOTE1Yy0zMzczNWRmYzdjMzcuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.dRz9i0hMJMBCGVGMpux2cML4Sl5P3sxMmshAHIFU0iI'
   },
   {
     name: "Skeleton",
     level: 8,
     attack: 10,
-    defense: 4,
+    defense: 6,
     health: 60,
     img: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/9d70ef73-ee0b-4abf-b97a-3389eff38ed5/d9vgxfx-b4707e19-5cbf-47be-9baf-666dd1e9c145.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzlkNzBlZjczLWVlMGItNGFiZi1iOTdhLTMzODllZmYzOGVkNVwvZDl2Z3hmeC1iNDcwN2UxOS01Y2JmLTQ3YmUtOWJhZi02NjZkZDFlOWMxNDUuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.SCx5Bl_HOQ3pBmecdTzg_YJjlmm0Yj4TohyA_h6x6GA'
   },
